@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="css/iconfont.css">
     <link rel="stylesheet" href="css/main.css">
     <script src="js/jquery-1.12.4.min.js"></script>
+    <script src="./js/bootstrap/js/bootstrap.min.js"></script>
 
 </head>
 
@@ -65,6 +66,24 @@
         </div>
     </div>
 
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">温馨提示</h4>
+                </div>
+                <div class="modal-body">
+                    修改成功！
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">确认</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <script>
         $(function () {
             $.ajax({
@@ -73,15 +92,15 @@
                     console.log(backData);
                     for (var key in backData.data) {
                         $('.' + key).val(backData.data[key]);
-                        $('.col-sm-10 img').attr('src',backData.data.user_pic);
+                        $('.col-sm-10 img').attr('src', backData.data.user_pic);
                     }
                 }
             });
 
-            $('#exampleInputFile').on('change',function(){
+            $('#exampleInputFile').on('change', function () {
                 let ff = this.files[0];
                 let url = URL.createObjectURL(ff);
-                $(this).prev().attr('src',url);
+                $(this).prev().attr('src', url);
             });
 
             $('.btn-modify').on('click', function (e) {
@@ -100,7 +119,12 @@
                     contentType: false,
                     processData: false,
                     success(backData) {
-                        console.log(backData);
+                        if (backData.code == 200) {
+                            $('#myModal').modal()
+                            $('.btn-primary').on('click',function(){
+                                parent.window.location.reload();
+                            })
+                        }
                     }
                 })
             })
