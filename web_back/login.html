@@ -12,6 +12,14 @@
     <script src="./js/jquery-1.12.4.min.js"></script>
     <link rel="stylesheet" href="./js/bootstrap/css/bootstrap.min.css">
     <script src="./js/bootstrap/js/bootstrap.min.js"></script>
+    <style>
+        .center {
+            float: left;
+            width: 35%;
+            margin-left: 30px;
+            margin-right: 30px;
+        }
+    </style>
 </head>
 
 <body>
@@ -26,9 +34,21 @@
             <form class="login_form">
                 <i class="iconfont icon-user"></i>
                 <i class="iconfont icon-key"></i>
-                <input type="text" class="input_txt" placeholder="邮箱/手机号">
-                <input type="password" class="input_pass" placeholder="密码">
-                <input type="submit" class="input_sub" id="btn_login"  value="登 录">
+                <input type="text" class="input_txt" id="userName" placeholder="邮箱/手机号">
+                <input type="password" class="input_pass" id="password" placeholder="密码">
+                <input type="submit" class="input_sub center" id="btn_login" value="登 录">
+                <input type="submit" class="input_sub center" id="btn_signIn" value="注 册">
+            </form>
+        </div>
+
+        <div class="login_form_con" id="signInBox" style="display: none">
+            <div class="login_title"></div>
+            <form class="login_form">
+                <i class="iconfont icon-user"></i>
+                <i class="iconfont icon-key"></i>
+                <input type="text" class="input_txt" id="newName" placeholder="邮箱/手机号">
+                <input type="password" class="input_pass" id="newpassword1" placeholder="密码">
+                <input type="submit" class="input_sub" id="btn_sure" value="确 定">
             </form>
         </div>
     </div>
@@ -57,8 +77,10 @@
             $('#btn_login').on('click', (e) => {
                 e.preventDefault();
 
-                let userName = $('.input_txt').val().trim();
-                let password = $('.input_pass').val().trim();
+                let userName = $('#userName').val().trim();
+                let password = $('#password').val().trim();
+                console.log(userName);
+                console.log(password);
 
                 if (userName == '' || password == '') {
                     $('#myModal').modal({
@@ -86,6 +108,41 @@
                     }
                 })
             });
+
+            // 注册事件
+            $('#btn_signIn').on('click', function (e) {
+                e.preventDefault();
+                $('.login_form_con').hide();
+                $('#signInBox').show();
+
+                $('#btn_sure').on('click', function (e) {
+
+                    let newName = $('#newName').val().trim();
+                    let newPassword1 = $('#newName').next().val();
+                    console.log(newPassword1);
+
+                    e.preventDefault();
+                    $.ajax({
+                        type: 'post',
+                        url: 'http://localhost:8000/admin/signIn',
+                        data: {
+                            newName: newName,
+                            newPassword: newPassword1
+                        },
+                        success(backData) {
+                            console.log(backData);
+                            if (backData.code === 200) {
+                                window.location.href = './index.html';
+                            } else {
+                                $('#myModal').modal({
+                                    keyboard: true
+                                });
+                                $('.modal-body').text('用户名已存在')
+                            }
+                        }
+                    })
+                })
+            })
         })
 
     </script>
