@@ -47,7 +47,7 @@
                 <i class="iconfont icon-user"></i>
                 <i class="iconfont icon-key"></i>
                 <input type="text" class="input_txt" id="newName" placeholder="邮箱/手机号">
-                <input type="password" class="input_pass" id="newpassword1" placeholder="密码">
+                <input type="password" class="input_pass" id="newpassword" placeholder="密码">
                 <input type="submit" class="input_sub" id="btn_sure" value="确 定">
             </form>
         </div>
@@ -66,8 +66,8 @@
                     ...
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-                    <button type="button" class="btn btn-primary">确认</button>
+                    <button type="button" class="btn btn-default">关闭</button>
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">确认</button>
                 </div>
             </div>
         </div>
@@ -116,27 +116,34 @@
                 $('#signInBox').show();
 
                 $('#btn_sure').on('click', function (e) {
+                    e.preventDefault();
 
                     let newName = $('#newName').val().trim();
-                    let newPassword1 = $('#newName').next().val();
-                    console.log(newPassword1);
+                    let newPassword = $('#newpassword').val().trim();
+                    
 
-                    e.preventDefault();
                     $.ajax({
                         type: 'post',
                         url: 'http://localhost:8000/admin/signIn',
                         data: {
                             newName: newName,
-                            newPassword: newPassword1
+                            newPassword: newPassword
                         },
                         success(backData) {
-                            console.log(backData);
+                            console.log(backData.code);
                             if (backData.code === 200) {
-                                window.location.href = './index.html';
+                                console.log('进来了吗');
+
+                                $('.modal-body').text('注册成功,是否立即登录');
+                                $('#myModal').modal();
+                                $('.btn-primary').on('click', function () {
+                                    // 显示登陆框
+                                    $('.login_form_con').show();
+                                    // 隐藏注册框
+                                    $('#signInBox').hide();
+                                })
                             } else {
-                                $('#myModal').modal({
-                                    keyboard: true
-                                });
+                                $('#myModal').modal();
                                 $('.modal-body').text('用户名已存在')
                             }
                         }

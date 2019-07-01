@@ -298,8 +298,8 @@
         <td class="text-center">{{ v.date }}</td>
         <td class="text-center">{{ v.state }}</td>
         <td class="text-center">
-            <a href="article_edit.html" class="btn btn-default btn-xs">编辑</a>
-            <a href="javascript:deleteTr( 1005 );" class="btn btn-danger btn-xs">删除</a>
+            <a href="article_edit.html?{{v.id}}" class="btn btn-default btn-xs">编辑</a>
+            <a href="javascript:deleteTr( 1005 );" data-id={{ v.id }} class="btn btn-danger btn-xs">删除</a>
         </td>
     </tr>
     {{ /each }}
@@ -369,16 +369,17 @@
                         if (backData.code == 200) {
                             let resHtml = template('tmp_list', backData);
                             $('tbody').html(resHtml);
-                            
+
                             // 因为 ajax 发送请求成功后才会得到真实的总页码
                             // 所有根据真实的总页码生成真实的页签条代码才应该放在这里
                             var totalPages = backData.totalPage; // 获取真实的总页码 (后台的数据)
                             console.log(totalPages);
-                            
+
+                            var currentPage = $pagination.twbsPagination('getCurrentPage');
+
                             if (totalPages != myTotalPage) { // 如果查出来的页码条和原来的页码条是一样的 则不执行下面的代码
                                 myTotalPage = totalPages; // 把查询出来的真实的总页码数显示在页码条上
 
-                                var currentPage = $pagination.twbsPagination('getCurrentPage');
                                 // 分页插件调用 destroy 方法的时候, 会自动的去调用 onPageClick 事件. 所有就无限循环了
                                 $pagination.twbsPagination('destroy');
                                 $pagination.twbsPagination($.extend({}, defaultOpts, {
@@ -392,6 +393,26 @@
                     }
                 })
             }
+
+            // 点击删除 删除数据 和 dom 因为删除是动态创建的 所有要用事件委托的方式给他注册事件
+            $('tbody').on('click', '.btn-danger', function (e) {
+                e.preventDefault();
+                let id = $(this).attr('data-id');
+                
+                // 发送 AJAX 请求
+                $.ajax({
+                    url: 'http://localhost:8000/admin/article_delete',
+                    data: {
+                        id: id
+                    },
+                    success(backData) {
+                        console.log(backData);
+                        if(backData.code == 200) {
+                            getAjax(1);
+                        }
+                    }
+                })
+            })
         })
     </script>
 </body>
